@@ -1,0 +1,33 @@
+services:
+  banco-esportivo:
+    image: mariadb:11
+    environment:
+      MARIADB_ROOT_PASSWORD: prova123
+      MARIADB_DATABASE: esportes
+      MARIADB_USER: sistema
+      MARIADB_PASSWORD: sistema123
+    volumes:
+      - dados_esportivos:/var/lib/mysql
+      - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    networks:
+      - rede_esportiva
+
+  aplicacao-esportiva:
+    build: ./app
+    environment:
+      DB_HOST: banco-esportivo
+      DB_USER: sistema
+      DB_PASSWORD: sistema123
+      DB_NAME: esportes
+    ports:
+      - "3001:3000"
+    depends_on:
+      - banco-esportivo
+    networks:
+      - rede_esportiva
+
+volumes:
+  dados_esportivos:
+
+networks:
+  rede_esportiva:
